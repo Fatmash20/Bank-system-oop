@@ -3,12 +3,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 
-
 /**
  *
  * @author Dell
  */
 package banksystem;
+
 public class Client extends Person {
     private double balance;
 
@@ -56,6 +56,7 @@ public class Client extends Person {
             System.out.println("your balance not enough ");
         }
     }
+
     @Override
     public void Display() {
         super.Display();

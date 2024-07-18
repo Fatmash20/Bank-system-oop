@@ -33,7 +33,7 @@ public class Admin extends Employee {
     // search employee
     public Employee SearchEmployee(int id) {
         for (Employee employee : employees) {
-            if (employee.getid() == id)
+            if (employee.getId() == id)
                 return employee;
         }
         return null;
@@ -49,13 +49,18 @@ public class Admin extends Employee {
     public void editEmployeeInfo(int id, String newPassword, String newName, double salary) {
         Employee employee = SearchEmployee(id);
         if (employee != null) {
-            employee.setname(newName);
-            employee.setpass(newPassword);
-            employee.Set_Salary(salary);
-            System.out.println("Employee info edit Successfully");
+            employee.setName(newName);
+            employee.setPass(newPassword);
+            employee.setSalary(salary);
+            System.out.println("Employee info edit Successfully");//TODO 
         } else {
             System.out.println("Employee not found");
         }
+    }
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString();
     }
 
 }

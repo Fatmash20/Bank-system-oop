@@ -14,41 +14,39 @@ public class Person {
   private String name;
   private String password;
 
-  public void setname(String n) {
-    if (Validation.Vali_name(name)) {
+  public void setName(String n) {
+    if (Validation.validateName(n)) {
       name = n;
     } else {
-      System.out.println("Make sure your name mattches the requirement ");
+      System.out.println("Make sure your name mattches the requirement ");//TODO 
     }
   }
 
-  public void setpass(String pass) {
-    if (Validation.Vali_pass(pass)) {
+  public void setPass(String pass) {
+    if (Validation.validatePass(pass)) {
       password = pass;
     } else {
       System.out.println("Make sure your passworde mattches the requirement ");
     }
   }
 
-  public void setid(int id) {
-    if (Validation.Vali_id(id)) {
-      this.id = id;
-    } else {
-      System.out.println("Make sure your id mattches the requirement ");
-    }
+  public void setId(int id) {
+
+    this.id = id;
+
   }
 
-  public int getid() {
+  public int getId() {
 
     return id;
   }
 
-  public String getpassword() {
+  public String getPassword() {
 
     return password;
   }
 
-  public String getname() {
+  public String getName() {
 
     return name;
   }
@@ -64,8 +62,14 @@ public class Person {
   }
 
   public void Display() {
-    System.out.println("NAME: " + name);
-    System.out.println("Password: " + password);
     System.out.println("ID: " + id);
+    System.out.println("NAME: " + name);
   }
-}
+
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return "Person{ID=" + id + ", Name='" + name + "'}";
+  }
+  }
+

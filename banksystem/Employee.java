@@ -23,12 +23,12 @@ public class Employee extends Person {
 
     public Employee(int id, String name, String password, double salary) {
         super(id, name, password);
-        Set_Salary(salary);
+        setSalary(salary);
     }
 
     // Setter
-    public boolean Set_Salary(double salary) {
-        if (Validation.Validate_Salary(salary)) {
+    public boolean setSalary(double salary) {
+        if (Validation.validateSalary(salary)) {
             this.salary = salary;
             return true;
         } else {
@@ -38,7 +38,7 @@ public class Employee extends Person {
     }
 
     // Getter
-    public double Get_salary(double salary) {
+    public double getSalary(double salary) {
         return salary;
     }
 
@@ -57,7 +57,7 @@ public class Employee extends Person {
     // search client method
     public Client SearchClient(int id) {
         for (Client client : clients) {
-            if (client.getid() == id) {
+            if (client.getId() == id) {
                 return client;
             }
         }
@@ -76,8 +76,8 @@ public class Employee extends Person {
     public void editClientInfo(int ClientId, String newPasseord, String newName) {
         Client client = SearchClient(ClientId);
         if (client != null) {
-            client.setpass(newPasseord);
-            client.setname(newName);
+            client.setPass(newPasseord);
+            client.setName(newName);
             System.out.println(" Client info edit Successfully ");
         } else {
             System.out.println("client not found");
@@ -86,5 +86,11 @@ public class Employee extends Person {
 
     public static List<Client> getClients() {
         return clients; // Provide public access through a method
+    }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return super.toString();
     }
 }

@@ -6,11 +6,13 @@ import banksystem.Employee;
 
 public class App {
     private static Scanner input = new Scanner(System.in);
-    private static Admin admin;
+
+    static Admin admin = new Admin(1, "Admin1", "adminpass1", 100000);
+    static Employee employee = new Employee(1, "Employee1", "empass1", 10000);
+    static Client client = new Client(1, "Client1", "clientpass1", 10000);
 
     public static void main(String[] args) throws Exception {
         int choice;
-        Admin admin = new Admin(1, "Admin", "adminpass1", 100000);
 
         while (true) {
             printMainMenu();
@@ -18,17 +20,14 @@ public class App {
             input.nextLine(); // newline
             switch (choice) {
                 case 1:
-                    clientLogin();
+                    clientLogin(client);
                     break;
                 case 2:
-                    employeeLogin();
+                    employeeLogin(employee);
                     break;
                 case 3:
-                    if (admin != null) {
-                        adminLogin(admin);
-                    } else {
-                        System.out.println("Admin is not initialized.");
-                    }
+
+                    adminLogin(admin);
                     break;
                 case 4:
                     System.out.println("Exiting...");
@@ -48,7 +47,7 @@ public class App {
         System.out.print("Enter your choice: ");
     }
 
-    private static void clientLogin() {
+    private static void clientLogin(Client client) {
         int id;
         String pass;
         System.out.println("Enter Client ID: ");
@@ -56,9 +55,8 @@ public class App {
         input.nextLine();
         System.out.println("Enter Client Password: ");
         pass = input.nextLine();
-        Client client = null;// initial value in case not found client in menu clients
         for (Client c : Employee.getClients()) {
-            if (c.getid() == id && c.getpassword().equals(pass)) {
+            if (c.getId() == id && c.getPassword().equals(pass)) {
                 client = c;
                 break;
             }
@@ -95,20 +93,24 @@ public class App {
                     client.Withdraw(withdrawAmount);
                     break;
                 case 3:
-                    client.getbalance();
+                    client.getBalance();
+                    // TODO this methods not return value
                     break;
                 case 4:
                     System.out.println("Enter recipient Client ID: ");
                     int recipientID = input.nextInt();
                     input.nextLine();
-                    Client recipient = admin.SearchClient(recipientID);
-                    if (recipient != null) {
-                        System.out.println("Enter amount to transfer: ");
-                        double transferAmount = input.nextDouble();
-                        client.TransferTo(transferAmount, recipient);
-
+                    if (admin != null) {
+                        Client recipient = admin.SearchClient(recipientID);
+                        if (recipient != null) {
+                            System.out.println("Enter amount to transfer: ");
+                            double transferAmount = input.nextDouble();
+                            client.TransferTo(transferAmount, recipient);
+                        } else {
+                            System.out.println("Recipient Client not found.");
+                        }
                     } else {
-                        System.out.println("Recipient Client not found.");
+                        System.out.println("Admin object is not initialized.");// TODO Cry wallahy
                     }
                 case 5:
                     return;
@@ -118,15 +120,14 @@ public class App {
         }
     }
 
-    private static void employeeLogin() {
+    private static void employeeLogin(Employee employee) {
         System.out.println("Enter Employee ID: ");
         int id = input.nextInt();
         input.nextLine();
         System.out.println("Enter Employee Password: ");
         String password = input.nextLine();
-
-        Employee employee = admin.SearchEmployee(id);
-        if (employee != null && employee.getpassword().equals(password)) {
+        employee = admin.SearchEmployee(id);
+        if (employee != null && employee.getPassword().equals(password)) {
             employeeMenu(employee);
         } else {
             System.out.println("Invalid Employee ID or Password.");
@@ -197,9 +198,9 @@ public class App {
         input.nextLine(); // Consume the newline left-over
         System.out.print("Enter Password: ");
         String password = input.nextLine();
-        System.out.println("Expected ID: " + admin.getid() + ", Entered ID: " + id);
-        System.out.println("Expected Password: " + admin.getpassword() + ", Entered Password: " + password);
-        if (admin.getid() == id && admin.getpassword().equals(password)) {
+        System.out.println("Expected ID: " + admin.getId() + ", Entered ID: " + id);
+        System.out.println("Expected Password: " + admin.getPassword() + ", Entered Password: " + password);
+        if (admin.getId() == id && admin.getPassword().equals(password)) {
             adminMenu(admin);
         } else {
             System.out.println("Invalid Admin ID or Password.");
@@ -225,7 +226,7 @@ public class App {
                     System.out.print("Enter Employee Name: ");
                     String employeeName = input.nextLine();
                     System.out.print("Enter Employee Password: ");
-                    String employeePassword = input.nextLine();
+                    String employeePassword = input.nextLine();// TODO any problem ? if pasword not valiade?
                     System.out.print("Enter Employee Salary: ");
                     double employeeSalary = input.nextDouble();
                     Employee newEmployee = new Employee(employeeId, employeeName, employeePassword, employeeSalary);

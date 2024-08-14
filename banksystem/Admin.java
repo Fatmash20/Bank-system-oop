@@ -11,8 +11,15 @@ import java.util.List;
  *
  * @author Dell
  */
+
+// FIXME: Rethink the inheritance relationship between Admin and Employee
+// If the admin is an employee, and the priviliges could change, then it's
+// better to keep them in the same class and just add an isAdmin field to
+// distinguish between admins and regular employees
+
+// FIXME: The Admin class should not have a list of employees and should not be
+// storing any of them
 public class Admin extends Employee {
-    protected static List<Employee> employees = new ArrayList<>();
 
     // Constructors
     public Admin() {
@@ -24,42 +31,61 @@ public class Admin extends Employee {
 
     }
 
-    // add employee
-    public void AddEmployee(Employee employee) {
-        employees.add(employee);
-        System.out.println("Employee added Successfuly");
+    @Override
+    public void display() {
+        super.display();
     }
 
-    // search employee
-    public Employee SearchEmployee(int id) {
-        for (Employee employee : employees) {
-            if (employee.getId() == id)
+    static public void displayEmployees(List<Employee> employees) {
+        for (Employee employee : employees)
+            employee.display();
+    }
+
+    public static Employee searchEmployee(List<Employee> employeeList, int id) {
+        if (employeeList == null || employeeList.isEmpty()) {
+            return null;
+        }
+        for (Employee e : employeeList) {
+            if (e.getId() == id) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    public static Employee searchEmployee(List<Employee> employeeList, int id, String pass) {
+        if (employeeList == null || employeeList.isEmpty()) {
+            return null;
+        }
+
+        for (Employee employee : employeeList) {
+            if (employee.getId() == id && employee.getPassword().equals(pass)) {
                 return employee;
+            }
         }
         return null;
     }
 
     // view all employee
-    public void getAllEmployee() {
+    public void displayAllEmployees(List<Employee> employees) {
         for (Employee employee : employees)
-            employee.Display();
+            employee.display();
     }
 
     // edit employee info
-    public void editEmployeeInfo(int id, String newPassword, String newName, double salary) {
-        Employee employee = SearchEmployee(id);
+    public void editEmployeeInfo(Employee employee, String newName, String newPassword, double salary) {
         if (employee != null) {
             employee.setName(newName);
             employee.setPass(newPassword);
             employee.setSalary(salary);
-            System.out.println("Employee info edit Successfully");//TODO 
+            System.out.println("Employee info edit Successfully");
         } else {
             System.out.println("Employee not found");
         }
     }
+
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         return super.toString();
     }
 

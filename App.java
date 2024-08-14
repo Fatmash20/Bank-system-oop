@@ -1,43 +1,68 @@
-import java.util.Scanner;
-
 import banksystem.Admin;
 import banksystem.Client;
 import banksystem.Employee;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class App {
     private static Scanner input = new Scanner(System.in);
 
-    static Admin admin = new Admin(1, "Admin1", "adminpass1", 100000);
-    static Employee employee = new Employee(1, "Employee1", "empass1", 10000);
-    static Client client = new Client(1, "Client1", "clientpass1", 10000);
+    // TODO: Centralize the storage location of the admin, employee, and client
+    // objects and store each in a property of array type.
+    static List<Admin> adminList = new ArrayList<>();
+    static List<Employee> employeeList = new ArrayList<>();
+    static List<Client> clientList = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         int choice;
+        clientList.add(new Client(1, "Ahmed", "ahmed123", 1000));
+        clientList.add(new Client(2, "Fatima", "fatima123", 2000));
+        employeeList.add(new Employee(1, "Arwa", "arwa1234", 10000));
+        employeeList.add(new Employee(2, "Abrar", "abrar123", 10000));
+        adminList.add(new Admin(1, "Mohammed", "mohammed123", 100000));
+        adminList.add(new Admin(2, "Omar", "omar1234", 100000));
 
+        // print client list
+        for (Client c : clientList) {
+            System.out.println(c);
+        }
+        // print employee list
+        for (Employee e : employeeList) {
+            System.out.println(e);
+        }
         while (true) {
             printMainMenu();
-            choice = input.nextInt();
-            input.nextLine(); // newline
-            switch (choice) {
-                case 1:
-                    clientLogin(client);
-                    break;
-                case 2:
-                    employeeLogin(employee);
-                    break;
-                case 3:
+            if (input.hasNextInt()) {// TODO
+                choice = input.nextInt();
+                input.nextLine(); // consume newline
+                switch (choice) {
+                    case 1:
+                        clientLogin();
+                        break;
+                    case 2:
+                        employeeLogin();
+                        break;
+                    case 3:
 
-                    adminLogin(admin);
-                    break;
-                case 4:
-                    System.out.println("Exiting...");
-                    return;
-                default:
-                    System.out.println("Invalid Choise,Try Again");
+                        adminLogin();
+                        break;
+                    case 4:
+                        System.out.println("Exiting...");
+                        return;
+                    default:
+                        System.out.println("Invalid Choise,Try Again");
+                }
+            } else {
+                System.out.println("No integer input provided, please enter a valid choice.");
+                input.nextLine(); // consume the invalid input to prevent infinite loop
             }
+
         }
     }
 
+    // TODO: Move this menu to another class
     private static void printMainMenu() {
         System.out.println("\nBank System Main Menu:");
         System.out.println("1. Client Login");
@@ -47,20 +72,40 @@ public class App {
         System.out.print("Enter your choice: ");
     }
 
-    private static void clientLogin(Client client) {
-        int id;
-        String pass;
-        System.out.println("Enter Client ID: ");
-        id = input.nextInt();
-        input.nextLine();
-        System.out.println("Enter Client Password: ");
-        pass = input.nextLine();
-        for (Client c : Employee.getClients()) {
+    // TODO: Move this menu to another class
+    private static Client findClientByIdAndPassword(int id, String pass) {
+        if (clientList == null || clientList.isEmpty()) {
+            return null;
+        }
+        for (Client c : clientList) {
             if (c.getId() == id && c.getPassword().equals(pass)) {
-                client = c;
-                break;
+                return c;
             }
         }
+        return null;
+    }
+
+    private static Client findClientById(int id) {
+        if (clientList == null || clientList.isEmpty()) {
+            return null;
+        }
+        for (Client c : clientList) {
+            if (c.getId() == id) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    private static void clientLogin() {
+        System.out.println("Enter Client ID: ");
+        int id = input.nextInt();
+        input.nextLine(); // Consume newline left-over
+        System.out.println("Enter Client Password: ");
+        String pass = input.nextLine();
+
+        Client client = findClientByIdAndPassword(id, pass);
+
         if (client != null) {
             clientMenu(client);
         } else {
@@ -68,6 +113,7 @@ public class App {
         }
     }
 
+    // TODO: Move this menu to another class
     private static void clientMenu(Client client) {
         int choice;
         while (true) {
@@ -93,24 +139,19 @@ public class App {
                     client.Withdraw(withdrawAmount);
                     break;
                 case 3:
-                    client.getBalance();
-                    // TODO this methods not return value
+                    System.out.println("Your balance is: " + client.getBalance());
                     break;
                 case 4:
                     System.out.println("Enter recipient Client ID: ");
                     int recipientID = input.nextInt();
                     input.nextLine();
-                    if (admin != null) {
-                        Client recipient = admin.SearchClient(recipientID);
-                        if (recipient != null) {
-                            System.out.println("Enter amount to transfer: ");
-                            double transferAmount = input.nextDouble();
-                            client.TransferTo(transferAmount, recipient);
-                        } else {
-                            System.out.println("Recipient Client not found.");
-                        }
+                    Client recipient = findClientById(recipientID);
+                    if (recipient != null) {
+                        System.out.println("Enter amount to transfer: ");
+                        double transferAmount = input.nextDouble();
+                        client.TransferTo(transferAmount, recipient);
                     } else {
-                        System.out.println("Admin object is not initialized.");// TODO Cry wallahy
+                        System.out.println("Recipient not found.");
                     }
                 case 5:
                     return;
@@ -120,14 +161,16 @@ public class App {
         }
     }
 
-    private static void employeeLogin(Employee employee) {
+    // TODO: Move this menu to another class
+    private static void employeeLogin() {
         System.out.println("Enter Employee ID: ");
         int id = input.nextInt();
         input.nextLine();
         System.out.println("Enter Employee Password: ");
         String password = input.nextLine();
-        employee = admin.SearchEmployee(id);
-        if (employee != null && employee.getPassword().equals(password)) {
+        Employee employee = Admin.searchEmployee(employeeList, id, password);
+
+        if (employee != null) {
             employeeMenu(employee);
         } else {
             System.out.println("Invalid Employee ID or Password.");
@@ -157,21 +200,23 @@ public class App {
                     String clientName = input.nextLine();
                     System.out.println("Enter Client Balance: ");
                     double clientBalance = input.nextDouble();
-                    Client newClient = new Client(clientId, clientPass, clientName, clientBalance);
-                    employee.AddClient(newClient);
+                    Client newClient = new Client(clientId, clientName, clientPass, clientBalance);
+                    clientList.add(newClient);
                     break;
                 case 2:
                     System.out.println("Enter Client ID to search: ");
                     int SearchClientid = input.nextInt();
                     input.nextLine();
-                    Client SearchClient = employee.SearchClient(SearchClientid);
+                    Client SearchClient = findClientById(SearchClientid);
                     if (SearchClient != null) {
                         System.out.println("Client found" + SearchClient);
                     } else {
                         System.out.println("Client not found. ");
                     }
+                    break;
                 case 3:
-                    employee.getAllClient();
+                    Employee.displayClients(clientList);
+                    break;
                 case 4:
                     System.out.print("Enter Client ID to edit: ");
                     int editClientId = input.nextInt();
@@ -180,10 +225,12 @@ public class App {
                     String newClientName = input.nextLine();
                     System.out.print("Enter new Client Password: ");
                     String newClientPassword = input.nextLine();
-                    employee.editClientInfo(editClientId, newClientName, newClientPassword);
+                    Client editedClient = findClientById(editClientId);
+                    employee.editClientInfo(editedClient, newClientName, newClientPassword);
                     break;
                 case 5:
-                    employee.Display();
+                    employee.display();
+                    break;
                 case 6:
                     return;
                 default:
@@ -192,21 +239,34 @@ public class App {
         }
     }
 
-    private static void adminLogin(Admin admin) {
+    private static Admin findAdminByIdAndPassword(int id, String pass) {
+        if (adminList == null || adminList.isEmpty()) {
+            return null;
+        }
+        for (Admin a : adminList) {
+            if (a.getId() == id && a.getPassword().equals(pass)) {
+                return a;
+            }
+        }
+        return null;
+    }
+
+    // TODO: Move this menu to another class
+    private static void adminLogin() {
         System.out.print("Enter Admin ID: ");
         int id = input.nextInt();
         input.nextLine(); // Consume the newline left-over
         System.out.print("Enter Password: ");
         String password = input.nextLine();
-        System.out.println("Expected ID: " + admin.getId() + ", Entered ID: " + id);
-        System.out.println("Expected Password: " + admin.getPassword() + ", Entered Password: " + password);
-        if (admin.getId() == id && admin.getPassword().equals(password)) {
+        Admin admin = findAdminByIdAndPassword(id, password);
+        if (admin != null) {
             adminMenu(admin);
         } else {
             System.out.println("Invalid Admin ID or Password.");
         }
     }
 
+    // TODO: Move this menu to another class
     private static void adminMenu(Admin admin) {
         while (true) {
             System.out.println("\nAdmin Menu:");
@@ -226,16 +286,17 @@ public class App {
                     System.out.print("Enter Employee Name: ");
                     String employeeName = input.nextLine();
                     System.out.print("Enter Employee Password: ");
-                    String employeePassword = input.nextLine();// TODO any problem ? if pasword not valiade?
+                    String employeePassword = input.nextLine();
                     System.out.print("Enter Employee Salary: ");
                     double employeeSalary = input.nextDouble();
+                    System.out.println("Your Employee salary is: " + employeeSalary);
                     Employee newEmployee = new Employee(employeeId, employeeName, employeePassword, employeeSalary);
-                    admin.AddEmployee(newEmployee);
+                    employeeList.add(newEmployee);
                     break;
                 case 2:
                     System.out.print("Enter Employee ID to search: ");
                     int searchEmployeeId = input.nextInt();
-                    Employee searchedEmployee = admin.SearchEmployee(searchEmployeeId);
+                    Employee searchedEmployee = Admin.searchEmployee(employeeList, searchEmployeeId);
                     if (searchedEmployee != null) {
                         System.out.println("Employee found: " + searchedEmployee);//
                     } else {
@@ -243,7 +304,7 @@ public class App {
                     }
                     break;
                 case 3:
-                    admin.getAllEmployee();
+                    Admin.displayEmployees(employeeList);
                     break;
                 case 4:
                     System.out.print("Enter Employee ID to edit: ");
@@ -255,7 +316,8 @@ public class App {
                     String newEmployeePassword = input.nextLine();
                     System.out.print("Enter new Employee Salary: ");
                     double newEmployeeSalary = input.nextDouble();
-                    admin.editEmployeeInfo(editEmployeeId, newEmployeeName, newEmployeePassword, newEmployeeSalary);
+                    Employee editedEmployee = Admin.searchEmployee(employeeList, editEmployeeId);
+                    admin.editEmployeeInfo(editedEmployee, newEmployeeName, newEmployeePassword, newEmployeeSalary);
                     break;
                 case 5:
                     return;
